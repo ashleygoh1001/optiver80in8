@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optiver 80 in 8 Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .input-container {
+      margin-bottom: 20px;
+    }
+    .input-container input {
+      font-size: 18px;
+      padding: 8px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .button {
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .feedback {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .score, .timer {
+      margin: 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Optiver 80 in 8 Practice Test</h1>
+    <div class="timer">Time Left: 08:00</div>
+    <div class="question">Press "Start" to begin!</div>
+    <div class="input-container">
+      <input type="text" id="answer" placeholder="Your answer" disabled>
+    </div>
+    <button class="button" id="startButton">Start</button>
+    <div class="feedback"></div>
+    <div class="score">Score: 0 / 0</div>
+  </div>
+
+  <script>
+    const timerElement = document.querySelector('.timer');
+    const questionElement = document.querySelector('.question');
+    const answerInput = document.getElementById('answer');
+    const feedbackElement = document.querySelector('.feedback');
+    const scoreElement = document.querySelector('.score');
+    const startButton = document.getElementById('startButton');
+
+    let score = 0;
+    let totalQuestions = 0;
+    let timeLeft = 8 * 60; // 8 minutes
+    let timer;
+    let correctAnswer;
+
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random() * 99) + 1;
+      const num2 = Math.floor(Math.random() * 99) + 1;
+      const operations = ['+', '-', '*', '/'];
+      const operation = operations[Math.floor(Math.random() * operations.length)];
+
+      let question;
+      if (operation === '/') {
+        question = `${num1 * num2} / ${num2}`;
+        correctAnswer = num1;
+      } else {
+        question = `${num1} ${operation} ${num2}`;
+        correctAnswer = eval(question);
+      }
+      return { question, correctAnswer };
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          endTest();
+        }
+      }, 1000);
+    }
+
+    function startTest() {
+      score = 0;
+      totalQuestions = 0;
+      timeLeft = 8 * 60;
+      answerInput.disabled = false;
+      feedbackElement.textContent = '';
+      scoreElement.textContent = 'Score: 0 / 0';
+      startButton.disabled = true;
+      answerInput.value = '';
+      answerInput.focus();
+
+      nextQuestion();
+      startTimer();
+    }
+
+    function nextQuestion() {
+      const { question, correctAnswer: answer } = generateQuestion();
+      questionElement.textContent = question;
+      correctAnswer = answer;
+    }
+
+    function checkAnswer(event) {
+      if (event.key === 'Enter') {
+        const userAnswer = parseFloat(answerInput.value.trim());
+        if (userAnswer === correctAnswer) {
+          feedbackElement.textContent = 'Correct!';
+          feedbackElement.style.color = 'green';
+          score++;
+        } else {
+          feedbackElement.textContent = `Wrong! The correct answer was ${correctAnswer}.`;
+          feedbackElement.style.color = 'red';
+        }
+        totalQuestions++;
+        scoreElement.textContent = `Score: ${score} / ${totalQuestions}`;
+        answerInput.value = '';
+        nextQuestion();
+      }
+    }
+
+    function endTest() {
+      questionElement.textContent = 'Time is up! Great job!';
+      answerInput.disabled = true;
+      startButton.disabled = false;
+      startButton.textContent = 'Restart';
+    }
+
+    startButton.addEventListener('click', startTest);
+    answerInput.addEventListener('keydown', checkAnswer);
+  </script>
+</body>
+</html>
